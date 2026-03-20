@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financeiro LD</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(180deg,#000,#0f0f0f);
+  color:#fff;
+}
+
+/* LOGIN */
+#login{
+  position:fixed;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#000;
+}
+
+.login-box{
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);
+  padding:30px;
+  border-radius:20px;
+  width:90%;
+  max-width:350px;
+  text-align:center;
+}
+
+.login-box input{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border:none;
+  border-radius:12px;
+}
+
+.login-box button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#25D366;
+  font-weight:bold;
+}
+
+/* APP */
+#app{display:none;padding:15px}
+
+/* HEADER */
+.topo{
+  text-align:center;
+  margin-bottom:15px;
+}
+
+.topo h2{
+  font-weight:600;
+}
+
+/* TOTAIS BONITOS */
+.totais{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.card{
+  background:linear-gradient(135deg,#25D366,#1ebe5d);
+  color:#000;
+  padding:15px;
+  border-radius:18px;
+  text-align:center;
+  font-weight:bold;
+  box-shadow:0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* TOTAL PRINCIPAL */
+.totalBox{
+  background:linear-gradient(135deg,#25D366,#1ebe5d);
+  padding:20px;
+  border-radius:20px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+  color:#000;
+  margin-bottom:15px;
+  box-shadow:0 10px 30px rgba(37,211,102,0.4);
+}
+
+/* BOTÕES */
+.botoes{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+button{
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:bold;
+  font-size:15px;
+}
+
+#add{
+  background:#25D366;
+}
+
+#limpar{
+  background:#ff4d4d;
+  color:#000;
+}
+
+/* CORTES */
+.cortes{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.corte{
+  padding:15px;
+  border-radius:18px;
+  background:#1a1a1a;
+  text-align:center;
+  cursor:pointer;
+  transition:.3s;
+  border:2px solid transparent;
+}
+
+.corte.active{
+  background:#25D366;
+  color:#000;
+  border:2px solid #fff;
+  transform:scale(1.05);
+}
+
+/* LISTA */
+.item{
+  background:#1a1a1a;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.lixo{cursor:pointer}
+
+/* LISTA */
+#lista{margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-box">
+    <h2>💈 Acesso</h2>
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="entrar()">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<div class="topo">
+  <h2>Controle Financeiro</h2>
+</div>
+
+<!-- TOTAIS -->
+<div class="totais">
+  <div class="card">Hoje<br><span id="dia">0</span></div>
+  <div class="card">Semana<br><span id="semana">0</span></div>
+  <div class="card">Mês<br><span id="mes">0</span></div>
+</div>
+
+<!-- TOTAL PRINCIPAL -->
+<div class="totalBox" id="total">R$ 0</div>
+
+<!-- BOTÕES -->
+<div class="botoes">
+  <button id="add" onclick="add()">Adicionar</button>
+  <button id="limpar" onclick="limpar()">Limpar</button>
+</div>
+
+<!-- CORTES -->
+<div class="cortes" id="cortes"></div>
+
+<!-- LISTA -->
+<div id="lista"></div>
+
+</div>
+
+<script>
+
+// LOGIN
+function hash(s){return s.split('').reduce((a,b)=>a+b.charCodeAt(0),0);}
+const senhaHash=hash("Ferabaguera@1");
+
+function entrar(){
+  if(hash(senha.value)===senhaHash){
+    login.style.display='none';
+    app.style.display='block';
+  }else alert("Senha errada");
+}
+
+// DADOS
+const listaCortes=[
+["Degradê Navalhado",30],
+["Degradê Máquina",30],
+["Corte Social",30],
+["Barba",25],
+["Sobrancelha",10],
+["Pezinho",15],
+["Bigode e Cavanhaque",15],
+["Raspado Navalha",30],
+["Pigmentação",50],
+["Barba Pigmentada",35],
+["Relaxamento",50],
+["Luzes",130]
+];
+
+let sel=[];
+let reg=JSON.parse(localStorage.getItem('cortes')||'[]');
+
+// CARDS
+listaCortes.forEach(c=>{
+  let el=document.createElement('div');
+  el.className='corte';
+  el.innerHTML=`${c[0]}<br><b>R$${c[1]}</b>`;
+
+  el.onclick=()=>{
+    el.classList.toggle('active');
+
+    if(sel.includes(c[0])){
+      sel=sel.filter(x=>x!==c[0]);
+    }else sel.push(c[0]);
+
+    atualizarTotal();
+  };
+
+  cortes.appendChild(el);
+});
+
+// TOTAL
+function atualizarTotal(){
+  let t=0;
+  sel.forEach(n=>{
+    let c=listaCortes.find(x=>x[0]==n);
+    t+=c[1];
+  });
+  total.innerText="R$ "+t;
+}
+
+// ADD
+function add(){
+  if(sel.length==0)return;
+
+  let t=0;
+  sel.forEach(n=>{
+    let c=listaCortes.find(x=>x[0]==n);
+    t+=c[1];
+  });
+
+  reg.push({nome:sel.join(' e '),valor:t,data:new Date()});
+  localStorage.setItem('cortes',JSON.stringify(reg));
+  location.reload();
+}
+
+// RENDER
+function render(){
+  lista.innerHTML='';
+
+  reg.forEach((r,i)=>{
+    let d=new Date(r.data);
+
+    lista.innerHTML+=`
+    <div class="item">
+      <div>${r.nome}<br><small>${d.toLocaleDateString()}</small></div>
+      <div>R$ ${r.valor} <span class="lixo" onclick="rem(${i})">🗑️</span></div>
+    </div>`;
+  });
+
+  calc();
+}
+
+// REMOVER
+function rem(i){
+  reg.splice(i,1);
+  localStorage.setItem('cortes',JSON.stringify(reg));
+  render();
+}
+
+// LIMPAR
+function limpar(){
+  if(confirm("Apagar tudo?")){
+    localStorage.removeItem('cortes');
+    location.reload();
+  }
+}
+
+// CALC
+function calc(){
+  let hoje=new Date();
+  let d=0,s=0,m=0;
+
+  reg.forEach(r=>{
+    let dt=new Date(r.data);
+
+    if(dt.toDateString()==hoje.toDateString()) d+=r.valor;
+
+    let ini=new Date(hoje);
+    ini.setDate(hoje.getDate()-hoje.getDay());
+
+    if(dt>=ini && dt<=hoje) s+=r.valor;
+
+    if(dt.getMonth()==hoje.getMonth()) m+=r.valor;
+  });
+
+  dia.innerText=d;
+  semana.innerText=s;
+  mes.innerText=m;
+}
+
+render();
+
+</script>
+
+</body>
+</html>
