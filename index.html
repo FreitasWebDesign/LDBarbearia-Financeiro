@@ -1,225 +1,257 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Financeiro LD</title>
+
+<title>Controle Barbearia</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
 
-body{
-  font-family:'Poppins',sans-serif;
-  background:linear-gradient(180deg,#000,#0f0f0f);
-  color:#fff;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins}
+
+body{background:#000;color:#fff;display:flex}
 
 /* LOGIN */
+
 #login{
-  position:fixed;
-  width:100%;
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#000;
+position:fixed;
+width:100%;
+height:100%;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:100;
 }
 
-.login-box{
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(20px);
-  padding:30px;
-  border-radius:20px;
-  width:90%;
-  max-width:350px;
-  text-align:center;
+.loginBox{
+background:#111;
+padding:40px;
+border-radius:20px;
+text-align:center;
 }
 
-.login-box input{
-  width:100%;
-  padding:14px;
-  margin:10px 0;
-  border:none;
-  border-radius:12px;
+.loginBox input{
+padding:12px;
+border:none;
+border-radius:10px;
+margin-top:10px;
 }
 
-.login-box button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  background:#25D366;
-  font-weight:bold;
+.loginBox button{
+margin-top:10px;
+padding:10px 20px;
+border:none;
+border-radius:10px;
+background:#fff;
+cursor:pointer;
 }
 
-/* APP */
-#app{display:none;padding:15px}
+/* MENU */
 
-/* HEADER */
-.topo{
-  text-align:center;
-  margin-bottom:15px;
+.sidebar{
+width:220px;
+background:#0b0b0b;
+height:100vh;
+padding:20px;
 }
 
-.topo h2{
-  font-weight:600;
+.menu div{
+padding:12px;
+background:#111;
+border-radius:10px;
+margin-bottom:10px;
+cursor:pointer;
 }
 
-/* TOTAIS BONITOS */
-.totais{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-bottom:15px;
+.menu div:hover{
+background:#fff;
+color:#000;
+}
+
+.main{
+flex:1;
+padding:25px;
+}
+
+/* DASHBOARD */
+
+.cards{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:20px;
 }
 
 .card{
-  background:linear-gradient(135deg,#25D366,#1ebe5d);
-  color:#000;
-  padding:15px;
-  border-radius:18px;
-  text-align:center;
-  font-weight:bold;
-  box-shadow:0 8px 20px rgba(0,0,0,0.4);
+background:#111;
+padding:20px;
+border-radius:15px;
+text-align:center;
 }
 
-/* TOTAL PRINCIPAL */
-.totalBox{
-  background:linear-gradient(135deg,#25D366,#1ebe5d);
-  padding:20px;
-  border-radius:20px;
-  text-align:center;
-  font-size:24px;
-  font-weight:bold;
-  color:#000;
-  margin-bottom:15px;
-  box-shadow:0 10px 30px rgba(37,211,102,0.4);
+.valor{
+font-size:24px;
+margin-top:5px;
+font-weight:bold;
 }
 
 /* BOTÕES */
+
 .botoes{
-  display:flex;
-  gap:10px;
-  margin-bottom:15px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-bottom:20px;
 }
 
 button{
-  flex:1;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-weight:bold;
-  font-size:15px;
+padding:10px 14px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
 }
 
-#add{
-  background:#25D366;
-}
+.add{background:#fff;color:#000}
+.del{background:#900;color:#fff}
+.final{background:#444;color:#fff}
 
-#limpar{
-  background:#ff4d4d;
-  color:#000;
+/* GRAFICO */
+
+.graficoBox{
+background:#111;
+padding:20px;
+border-radius:15px;
 }
 
 /* CORTES */
+
 .cortes{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
 }
 
 .corte{
-  padding:15px;
-  border-radius:18px;
-  background:#1a1a1a;
-  text-align:center;
-  cursor:pointer;
-  transition:.3s;
-  border:2px solid transparent;
+background:#111;
+padding:15px;
+border-radius:10px;
+text-align:center;
+cursor:pointer;
 }
 
 .corte.active{
-  background:#25D366;
-  color:#000;
-  border:2px solid #fff;
-  transform:scale(1.05);
+background:#fff;
+color:#000;
 }
 
-/* LISTA */
+/* HISTORICO */
+
 .item{
-  background:#1a1a1a;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
-  display:flex;
-  justify-content:space-between;
+background:#111;
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+display:flex;
+justify-content:space-between;
 }
 
-.lixo{cursor:pointer}
-
-/* LISTA */
-#lista{margin-top:10px}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
 <div id="login">
-  <div class="login-box">
-    <h2>💈 Acesso</h2>
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="entrar()">Entrar</button>
-  </div>
+<div class="loginBox">
+<h2>Acesso</h2>
+<input type="password" id="senha" placeholder="Senha">
+<br>
+<button onclick="entrar()">Entrar</button>
+</div>
 </div>
 
-<!-- APP -->
-<div id="app">
-
-<div class="topo">
-  <h2>Controle Financeiro</h2>
+<div class="sidebar">
+<h2>Barbearia</h2>
+<div class="menu">
+<div onclick="page(0)">Dashboard</div>
+<div onclick="page(1)">Registrar</div>
+<div onclick="page(2)">Histórico</div>
+<div onclick="page(3)">Finalizar</div>
+</div>
 </div>
 
-<!-- TOTAIS -->
-<div class="totais">
-  <div class="card">Hoje<br><span id="dia">0</span></div>
-  <div class="card">Semana<br><span id="semana">0</span></div>
-  <div class="card">Mês<br><span id="mes">0</span></div>
+<div class="main">
+
+<div id="p0">
+
+<div class="cards">
+<div class="card">Hoje<div class="valor" id="dia">R$0</div></div>
+<div class="card">Semana<div class="valor" id="semana">R$0</div></div>
+<div class="card">Mês<div class="valor" id="mes">R$0</div></div>
+<div class="card">Cortes<div class="valor" id="totalCortes">0</div></div>
 </div>
 
-<!-- TOTAL PRINCIPAL -->
-<div class="totalBox" id="total">R$ 0</div>
-
-<!-- BOTÕES -->
 <div class="botoes">
-  <button id="add" onclick="add()">Adicionar</button>
-  <button id="limpar" onclick="limpar()">Limpar</button>
+<button onclick="limparDia()">Limpar Dia</button>
+<button onclick="limparSemana()">Limpar Semana</button>
+<button onclick="limparMes()">Limpar Mês</button>
+<button onclick="removerUltimo()">Limpar Último Corte</button>
+<button onclick="apagarTudo()" class="del">Apagar Tudo</button>
 </div>
 
-<!-- CORTES -->
-<div class="cortes" id="cortes"></div>
+<div class="graficoBox">
+<canvas id="grafico"></canvas>
+</div>
 
-<!-- LISTA -->
+</div>
+
+<div id="p1" style="display:none">
+<div class="cortes" id="cortes"></div>
+<br>
+<button class="add" onclick="registrar()">Adicionar</button>
+</div>
+
+<div id="p2" style="display:none">
 <div id="lista"></div>
+</div>
+
+<div id="p3" style="display:none">
+<button class="final" onclick="finalDia()">Finalizar Dia</button>
+<br><br>
+<button class="final" onclick="finalSemana()">Finalizar Semana</button>
+<br><br>
+<button class="final" onclick="finalMes()">Finalizar Mês</button>
+</div>
 
 </div>
 
 <script>
 
-// LOGIN
-function hash(s){return s.split('').reduce((a,b)=>a+b.charCodeAt(0),0);}
-const senhaHash=hash("Ferabaguera@1");
+/* LOGIN */
 
 function entrar(){
-  if(hash(senha.value)===senhaHash){
-    login.style.display='none';
-    app.style.display='block';
-  }else alert("Senha errada");
+if(document.getElementById("senha").value==="Ferabaguera@1"){
+document.getElementById("login").style.display="none"
+}else{
+alert("Senha incorreta")
+}
 }
 
-// DADOS
+/* MENU */
+
+function page(n){
+document.querySelectorAll(".main > div").forEach(p=>p.style.display="none")
+document.querySelectorAll(".main > div")[n].style.display="block"
+}
+
+/* CORTES */
+
 const listaCortes=[
 ["Degradê Navalhado",30],
 ["Degradê Máquina",30],
@@ -233,111 +265,115 @@ const listaCortes=[
 ["Barba Pigmentada",35],
 ["Relaxamento",50],
 ["Luzes",130]
-];
+]
 
-let sel=[];
-let reg=JSON.parse(localStorage.getItem('cortes')||'[]');
+let selecionados=[]
+let dados=JSON.parse(localStorage.getItem("dados")||"[]")
 
-// CARDS
 listaCortes.forEach(c=>{
-  let el=document.createElement('div');
-  el.className='corte';
-  el.innerHTML=`${c[0]}<br><b>R$${c[1]}</b>`;
+let el=document.createElement("div")
+el.className="corte"
+el.innerHTML=`${c[0]}<br><b>R$${c[1]}</b>`
+el.onclick=()=>{
+el.classList.toggle("active")
+if(selecionados.includes(c[0])){
+selecionados=selecionados.filter(x=>x!==c[0])
+}else{
+selecionados.push(c[0])
+}
+}
+cortes.appendChild(el)
+})
 
-  el.onclick=()=>{
-    el.classList.toggle('active');
-
-    if(sel.includes(c[0])){
-      sel=sel.filter(x=>x!==c[0]);
-    }else sel.push(c[0]);
-
-    atualizarTotal();
-  };
-
-  cortes.appendChild(el);
-});
-
-// TOTAL
-function atualizarTotal(){
-  let t=0;
-  sel.forEach(n=>{
-    let c=listaCortes.find(x=>x[0]==n);
-    t+=c[1];
-  });
-  total.innerText="R$ "+t;
+function registrar(){
+let agora=new Date()
+selecionados.forEach(n=>{
+let c=listaCortes.find(x=>x[0]==n)
+dados.push({nome:n,valor:c[1],data:agora.toISOString()})
+})
+localStorage.setItem("dados",JSON.stringify(dados))
+location.reload()
 }
 
-// ADD
-function add(){
-  if(sel.length==0)return;
+/* CALCULO */
 
-  let t=0;
-  sel.forEach(n=>{
-    let c=listaCortes.find(x=>x[0]==n);
-    t+=c[1];
-  });
+function calcular(){
 
-  reg.push({nome:sel.join(' e '),valor:t,data:new Date()});
-  localStorage.setItem('cortes',JSON.stringify(reg));
-  location.reload();
+let hoje=new Date()
+let inicioSemana=new Date()
+inicioSemana.setDate(hoje.getDate()-hoje.getDay()+1)
+
+let d=0,s=0,m=0
+let semana=[0,0,0,0,0,0]
+
+dados.forEach(r=>{
+let data=new Date(r.data)
+
+if(data.toDateString()==hoje.toDateString()) d+=r.valor
+if(data>=inicioSemana && data<=hoje) s+=r.valor
+if(data.getMonth()==hoje.getMonth()) m+=r.valor
+
+let dia=data.getDay()
+if(dia>0 && dia<7) semana[dia-1]+=r.valor
+})
+
+dia.innerText="R$"+d
+semana.innerText="R$"+s
+mes.innerText="R$"+m
+totalCortes.innerText=dados.length
+
+grafico(semana)
 }
 
-// RENDER
-function render(){
-  lista.innerHTML='';
-
-  reg.forEach((r,i)=>{
-    let d=new Date(r.data);
-
-    lista.innerHTML+=`
-    <div class="item">
-      <div>${r.nome}<br><small>${d.toLocaleDateString()}</small></div>
-      <div>R$ ${r.valor} <span class="lixo" onclick="rem(${i})">🗑️</span></div>
-    </div>`;
-  });
-
-  calc();
+function grafico(sem){
+new Chart(document.getElementById("grafico"),{
+type:"bar",
+data:{
+labels:["Seg","Ter","Qua","Qui","Sex","Sab"],
+datasets:[{data:sem,backgroundColor:["#777","#aaa","#ccc","#666","#444","#222"]}]
+}
+})
 }
 
-// REMOVER
-function rem(i){
-  reg.splice(i,1);
-  localStorage.setItem('cortes',JSON.stringify(reg));
-  render();
+function removerUltimo(){
+dados.pop()
+localStorage.setItem("dados",JSON.stringify(dados))
+location.reload()
 }
 
-// LIMPAR
-function limpar(){
-  if(confirm("Apagar tudo?")){
-    localStorage.removeItem('cortes');
-    location.reload();
-  }
+function apagarTudo(){
+localStorage.clear()
+location.reload()
 }
 
-// CALC
-function calc(){
-  let hoje=new Date();
-  let d=0,s=0,m=0;
-
-  reg.forEach(r=>{
-    let dt=new Date(r.data);
-
-    if(dt.toDateString()==hoje.toDateString()) d+=r.valor;
-
-    let ini=new Date(hoje);
-    ini.setDate(hoje.getDate()-hoje.getDay());
-
-    if(dt>=ini && dt<=hoje) s+=r.valor;
-
-    if(dt.getMonth()==hoje.getMonth()) m+=r.valor;
-  });
-
-  dia.innerText=d;
-  semana.innerText=s;
-  mes.innerText=m;
+function limparDia(){
+let hoje=new Date().toDateString()
+dados=dados.filter(r=>new Date(r.data).toDateString()!=hoje)
+localStorage.setItem("dados",JSON.stringify(dados))
+location.reload()
 }
 
-render();
+function limparSemana(){
+let hoje=new Date()
+let inicio=new Date()
+inicio.setDate(hoje.getDate()-hoje.getDay()+1)
+dados=dados.filter(r=>new Date(r.data)<inicio)
+localStorage.setItem("dados",JSON.stringify(dados))
+location.reload()
+}
+
+function limparMes(){
+let mesAtual=new Date().getMonth()
+dados=dados.filter(r=>new Date(r.data).getMonth()!=mesAtual)
+localStorage.setItem("dados",JSON.stringify(dados))
+location.reload()
+}
+
+function finalDia(){alert("Dia finalizado! 💈")}
+function finalSemana(){alert("Semana finalizada! 🔥")}
+function finalMes(){alert("Mês finalizado! 🏆")}
+
+calcular()
 
 </script>
 
