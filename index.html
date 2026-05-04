@@ -8,7 +8,6 @@
 <title>Controle Barbearia</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
@@ -79,11 +78,11 @@ flex:1;
 padding:25px;
 }
 
-/* DASHBOARD */
+/* CARDS */
 
 .cards{
 display:grid;
-grid-template-columns:repeat(4,1fr);
+grid-template-columns:repeat(3,1fr);
 gap:15px;
 margin-bottom:20px;
 }
@@ -101,33 +100,30 @@ margin-top:5px;
 font-weight:bold;
 }
 
-/* BOTÕES */
+/* CALENDARIO */
 
-.botoes{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-bottom:20px;
+.calendario{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:12px;
+margin-top:10px;
 }
 
-button{
-padding:10px 14px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.add{background:#fff;color:#000}
-.del{background:#900;color:#fff}
-.final{background:#444;color:#fff}
-
-/* GRAFICO */
-
-.graficoBox{
+.diaBox{
 background:#111;
-padding:20px;
-border-radius:15px;
+padding:12px;
+border-radius:12px;
+text-align:center;
+transition:0.2s;
+}
+
+.diaBox:hover{
+transform:scale(1.05);
+}
+
+.hoje{
+background:#fff;
+color:#000;
 }
 
 /* CORTES */
@@ -151,15 +147,16 @@ background:#fff;
 color:#000;
 }
 
-/* HISTORICO */
+/* BOTÃO */
 
-.item{
-background:#111;
-padding:10px;
+button{
+padding:10px 14px;
+border:none;
 border-radius:10px;
-margin-bottom:10px;
-display:flex;
-justify-content:space-between;
+cursor:pointer;
+font-weight:bold;
+background:#fff;
+color:#000;
 }
 
 </style>
@@ -170,7 +167,7 @@ justify-content:space-between;
 <div id="login">
 <div class="loginBox">
 <h2>Acesso</h2>
-<input type="password" id="senha" placeholder="Senha">
+<input type="password" id="senha">
 <br>
 <button onclick="entrar()">Entrar</button>
 </div>
@@ -181,8 +178,6 @@ justify-content:space-between;
 <div class="menu">
 <div onclick="page(0)">Dashboard</div>
 <div onclick="page(1)">Registrar</div>
-<div onclick="page(2)">Histórico</div>
-<div onclick="page(3)">Finalizar</div>
 </div>
 </div>
 
@@ -194,39 +189,18 @@ justify-content:space-between;
 <div class="card">Hoje<div class="valor" id="dia">R$0</div></div>
 <div class="card">Semana<div class="valor" id="semana">R$0</div></div>
 <div class="card">Mês<div class="valor" id="mes">R$0</div></div>
-<div class="card">Cortes<div class="valor" id="totalCortes">0</div></div>
 </div>
 
-<div class="botoes">
-<button onclick="limparDia()">Limpar Dia</button>
-<button onclick="limparSemana()">Limpar Semana</button>
-<button onclick="limparMes()">Limpar Mês</button>
-<button onclick="removerUltimo()">Limpar Último Corte</button>
-<button onclick="apagarTudo()" class="del">Apagar Tudo</button>
-</div>
+<h3 id="dataAtual"></h3>
 
-<div class="graficoBox">
-<canvas id="grafico"></canvas>
-</div>
+<div class="calendario" id="calendario"></div>
 
 </div>
 
 <div id="p1" style="display:none">
 <div class="cortes" id="cortes"></div>
 <br>
-<button class="add" onclick="registrar()">Adicionar</button>
-</div>
-
-<div id="p2" style="display:none">
-<div id="lista"></div>
-</div>
-
-<div id="p3" style="display:none">
-<button class="final" onclick="finalDia()">Finalizar Dia</button>
-<br><br>
-<button class="final" onclick="finalSemana()">Finalizar Semana</button>
-<br><br>
-<button class="final" onclick="finalMes()">Finalizar Mês</button>
+<button onclick="registrar()">Adicionar</button>
 </div>
 
 </div>
@@ -235,9 +209,14 @@ justify-content:space-between;
 
 /* LOGIN */
 
+if(localStorage.getItem("logado")){
+document.getElementById("login").style.display="none"
+}
+
 function entrar(){
 if(document.getElementById("senha").value==="Ferabaguera@1"){
-document.getElementById("login").style.display="none"
+localStorage.setItem("logado","true")
+location.reload()
 }else{
 alert("Senha incorreta")
 }
@@ -304,7 +283,6 @@ let inicioSemana=new Date()
 inicioSemana.setDate(hoje.getDate()-hoje.getDay()+1)
 
 let d=0,s=0,m=0
-let semana=[0,0,0,0,0,0]
 
 dados.forEach(r=>{
 let data=new Date(r.data)
@@ -312,68 +290,60 @@ let data=new Date(r.data)
 if(data.toDateString()==hoje.toDateString()) d+=r.valor
 if(data>=inicioSemana && data<=hoje) s+=r.valor
 if(data.getMonth()==hoje.getMonth()) m+=r.valor
-
-let dia=data.getDay()
-if(dia>0 && dia<7) semana[dia-1]+=r.valor
 })
 
 dia.innerText="R$"+d
 semana.innerText="R$"+s
 mes.innerText="R$"+m
-totalCortes.innerText=dados.length
 
-grafico(semana)
 }
 
-function grafico(sem){
-new Chart(document.getElementById("grafico"),{
-type:"bar",
-data:{
-labels:["Seg","Ter","Qua","Qui","Sex","Sab"],
-datasets:[{data:sem,backgroundColor:["#777","#aaa","#ccc","#666","#444","#222"]}]
+/* CALENDARIO */
+
+function gerarCalendario(){
+
+const hoje=new Date()
+const ano=hoje.getFullYear()
+const mes=hoje.getMonth()
+
+const diasNoMes=new Date(ano,mes+1,0).getDate()
+
+const diasSemana=["Dom","Seg","Ter","Qua","Qui","Sex","Sab"]
+
+let html=""
+
+for(let i=1;i<=diasNoMes;i++){
+
+let data=new Date(ano,mes,i)
+
+let total=0
+
+dados.forEach(r=>{
+let d=new Date(r.data)
+if(d.getDate()==i && d.getMonth()==mes){
+total+=r.valor
 }
 })
+
+let classe = (i===hoje.getDate()) ? "diaBox hoje" : "diaBox"
+
+html+=`
+<div class="${classe}">
+<b>${i}</b><br>
+<small>${diasSemana[data.getDay()]}</small><br>
+<b>R$${total}</b>
+</div>
+`
 }
 
-function removerUltimo(){
-dados.pop()
-localStorage.setItem("dados",JSON.stringify(dados))
-location.reload()
-}
+document.getElementById("calendario").innerHTML=html
 
-function apagarTudo(){
-localStorage.clear()
-location.reload()
+document.getElementById("dataAtual").innerText=
+hoje.toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"})
 }
-
-function limparDia(){
-let hoje=new Date().toDateString()
-dados=dados.filter(r=>new Date(r.data).toDateString()!=hoje)
-localStorage.setItem("dados",JSON.stringify(dados))
-location.reload()
-}
-
-function limparSemana(){
-let hoje=new Date()
-let inicio=new Date()
-inicio.setDate(hoje.getDate()-hoje.getDay()+1)
-dados=dados.filter(r=>new Date(r.data)<inicio)
-localStorage.setItem("dados",JSON.stringify(dados))
-location.reload()
-}
-
-function limparMes(){
-let mesAtual=new Date().getMonth()
-dados=dados.filter(r=>new Date(r.data).getMonth()!=mesAtual)
-localStorage.setItem("dados",JSON.stringify(dados))
-location.reload()
-}
-
-function finalDia(){alert("Dia finalizado! 💈")}
-function finalSemana(){alert("Semana finalizada! 🔥")}
-function finalMes(){alert("Mês finalizado! 🏆")}
 
 calcular()
+gerarCalendario()
 
 </script>
 
